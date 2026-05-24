@@ -11,6 +11,32 @@ from langchain_core.messages import AIMessage, HumanMessage
 
 st.set_page_config(page_title="Disasters Chat", layout="wide", page_icon="🌍")
 
+SHOWCASE_QUERIES = [
+    {
+        "label": "📊 Chart",
+        "query": "Show the top 10 countries by total deaths from all disasters as a bar chart",
+        "help": "Renders an interactive Plotly bar chart",
+    },
+    {
+        "label": "🌐 HTML",
+        "query": (
+            "Show a rich HTML summary of the deadliest disaster types worldwide: "
+            "include a styled table with type, event count and total deaths. "
+            "Return the result as a self-contained HTML block with inline CSS styles and colors."
+        ),
+        "help": "Renders an HTML block with inline styles",
+    },
+    {
+        "label": "📋 Table",
+        "query": (
+            "List the 15 deadliest individual disaster events ever recorded, "
+            "showing year, country, disaster type, event name and total deaths. "
+            "Return the result as a markdown table."
+        ),
+        "help": "Renders a markdown table",
+    },
+]
+
 SAMPLE_QUERIES = [
     "Top 10 countries by total deaths from all disasters",
     "Trend of floods per year since 1970",
@@ -86,6 +112,14 @@ def _ask(user_input: str) -> str:
 with st.sidebar:
     st.title("🌍 Disasters Chat")
     st.caption("EM-DAT global disasters dataset, 1900–2021")
+    st.divider()
+
+    st.subheader("Output type demos")
+    for item in SHOWCASE_QUERIES:
+        if st.button(item["label"], use_container_width=True,
+                     help=item["help"], key=f"sc_{item['label']}"):
+            st.session_state.pending_query = item["query"]
+
     st.divider()
 
     st.subheader("Sample queries")

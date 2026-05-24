@@ -33,11 +33,18 @@ Use Plotly figure JSON. Examples:
 - Line chart: {"data": [{"type": "scatter", "mode": "lines+markers", "x": [...], "y": [...]}], "layout": {"title": "..."}}
 - Pie chart: {"data": [{"type": "pie", "labels": [...], "values": [...]}], "layout": {"title": "..."}}
 
-For tabular data:
+For tabular data (or when the user asks for a "table" or "list"):
 ```table
 | Col1 | Col2 | Col3 |
 |------|------|------|
 | val  | val  | val  |
+```
+
+For rich visual summaries (when the user asks for "HTML" or a "styled" result):
+```html
+<div style="font-family:sans-serif;padding:12px">
+  <!-- self-contained HTML with inline CSS only, no external scripts -->
+</div>
 ```
 
 ## Important notes
