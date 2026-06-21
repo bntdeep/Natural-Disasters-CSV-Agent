@@ -17,6 +17,23 @@ Ask any question in plain English and get a prose answer plus an interactive cha
 
 **Key constraint:** MCP is the only data API. The frontend never reads the CSV directly — all data flows through the LangChain agent using MCP tools.
 
+### Request lifecycle
+
+1. **Streamlit** (`ui/app.py`) receives user input and calls `run_query()`.
+2. **LangGraph ReAct agent** (`ui/agent.py`) enters a loop:
+   - GPT-4o decides which MCP tool to call based on the question and the system prompt.
+   - It may call **multiple tools in sequence** (e.g. `get_schema` → `top_n` → `aggregate`) until it has enough data.
+   - Each tool result is appended to the message history and the model reasons again.
+   - The loop exits when the model produces a final answer with no further tool calls.
+3. **MCP server** (`mcp_server/server.py`) exposes tools via FastMCP over stdio. Each tool accepts a **Pydantic model** as input — FastMCP converts these to JSON Schema so GPT-4o sees exact enum values and types, preventing hallucinated field names.
+4. **tools.py** executes pandas queries (filter → groupby → aggregate) and returns a plain `dict`.
+5. **GPT-4o** formats the final answer as markdown with a fenced code block tagged by output type:
+   - ` ```plotly ` — Plotly figure JSON → rendered via `st.plotly_chart`
+   - ` ```html ` — self-contained HTML with inline CSS → rendered via `st.components.html`
+   - ` ```table ` — markdown table → rendered via `st.markdown`
+   - plain prose → rendered via `st.markdown`
+6. **`_render_response()`** in `app.py` parses the fenced blocks and routes each one to the correct Streamlit renderer.
+
 ### MCP tools
 
 | Tool | Purpose |

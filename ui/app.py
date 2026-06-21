@@ -167,6 +167,7 @@ if user_input:
                 response = _ask(user_input)
             except Exception as e:
                 response = f"❌ Error: {e}"
+        print(response)
         _render_response(response)
 
     st.session_state.messages.append({"role": "assistant", "content": response})
